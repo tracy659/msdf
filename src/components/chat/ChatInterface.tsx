@@ -27,6 +27,7 @@ import { Input } from "@/components/ui/input";
 import { mockServices, generateCaseNumber } from "@/lib/mockData";
 import qatariAgentAvatar from "@/assets/qatari-agent-avatar.png";
 import { completeChat } from "@/services/chatCompletionService";
+import { api } from "@/services/api";
 
 interface ChatInterfaceProps {
   caseId?: string;
@@ -88,9 +89,11 @@ export function ChatInterface({ caseId, onCaseCreated }: ChatInterfaceProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDraggingOverChat, setIsDraggingOverChat] = useState(false);
-
+  const [apiMessages, setApiMessages] = useState<
+    { type: "user" | "assistant"; content: string }[]
+  >([]);
   const STATIC_CASE_ID = "CASE-1023";
-  const STATIC_QUESTION = "Summarize the attached document";
+
   // Helper to create preview for file
   const createFilePreview = (file: File): string | undefined => {
     if (file.type.startsWith("image/")) {
@@ -138,20 +141,20 @@ export function ChatInterface({ caseId, onCaseCreated }: ChatInterfaceProps) {
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
-  const fetchFirstMessage = async () => {
-    const aiResponse = await completeChat({
-      messages: [
-        {
-          type: "user",
-          content: STATIC_QUESTION,
-        },
-      ],
-      attachments: [],
-      question: STATIC_QUESTION,
-      caseId: STATIC_CASE_ID,
-    });
-    return aiResponse;
-  };
+  // const fetchFirstMessage = async () => {
+  //   const aiResponse = await completeChat({
+  //     messages: [
+  //       {
+  //         type: "user",
+  //         content: "",
+  //       },
+  //     ],
+  //     attachments: [],
+  //     question: "",
+  //     caseId: STATIC_CASE_ID,
+  //   });
+  //   return aiResponse;
+  // };
   // Initialize with greeting
   // useEffect(() => {
 
@@ -163,20 +166,30 @@ export function ChatInterface({ caseId, onCaseCreated }: ChatInterfaceProps) {
   //   };
   //   setMessages([greeting]);
   // }, [language]);
+  // useEffect(() => {
+  //   const loadGreeting = async () => {
+  //     const greeting: ChatMessage = {
+  //       id: "greeting",
+  //       role: "agent",
+  //       content: await fetchFirstMessage(),
+  //       timestamp: new Date().toISOString(),
+  //     };
+
+  //     setMessages([greeting]);
+  //   };
+
+  //   loadGreeting();
+  // }, [language]);
   useEffect(() => {
-    const loadGreeting = async () => {
-      const greeting: ChatMessage = {
-        id: "greeting",
+    setMessages([
+      {
+        id: "init",
         role: "agent",
-        content: await fetchFirstMessage(),
+        content: "",
         timestamp: new Date().toISOString(),
-      };
-
-      setMessages([greeting]);
-    };
-
-    loadGreeting();
-  }, [language]);
+      },
+    ]);
+  }, []);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -202,70 +215,59 @@ export function ChatInterface({ caseId, onCaseCreated }: ChatInterfaceProps) {
 
     const userText = inputValue;
 
-    // 1️⃣ Add user message to UI immediately
     const userMessage: ChatMessageWithFiles = {
       id: `msg-${Date.now()}`,
       role: "user",
-      content:
-        userText ||
-        (language === "ar" ? "تم إرفاق مستندات" : "Documents attached"),
+      content: userText,
       timestamp: new Date().toISOString(),
-      fileAttachments:
-        attachedFiles.length > 0
-          ? attachedFiles.map((file) => ({
-              id: `file-${Date.now()}-${Math.random()}`,
-              file,
-              preview: createFilePreview(file),
-            }))
-          : undefined,
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsTyping(true);
 
+    const updatedApiMessages = [
+      ...apiMessages,
+      {
+        type: "user" as const,
+        content: userText,
+      },
+    ];
+
+    setApiMessages(updatedApiMessages);
+
     try {
-      // 2️⃣ Call API
       const aiResponse = await completeChat({
-        messages: [
-          {
-            type: "user",
-            content: userText,
-          },
-        ],
+        messages: updatedApiMessages,
         attachments: attachedFiles,
-        question: STATIC_QUESTION,
+        question: userText,
         caseId: STATIC_CASE_ID,
       });
 
-      // 3️⃣ Add agent response from API
       const agentMessage: ChatMessageWithFiles = {
         id: `msg-${Date.now()}`,
         role: "agent",
-        content: aiResponse, // 👈 Arabic text returned
+        content: aiResponse,
         timestamp: new Date().toISOString(),
       };
 
       setMessages((prev) => [...prev, agentMessage]);
+
+      setApiMessages((prev) => [
+        ...prev,
+        {
+          type: "assistant",
+          content: aiResponse,
+        },
+      ]);
     } catch (error) {
-      console.error("Chat API error:", error);
-
-      const errorMessage: ChatMessageWithFiles = {
-        id: `msg-${Date.now()}`,
-        role: "agent",
-        content:
-          language === "ar"
-            ? "حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى."
-            : "An error occurred while processing your request. Please try again.",
-        timestamp: new Date().toISOString(),
-      };
-
-      setMessages((prev) => [...prev, errorMessage]);
+      console.error(error);
     } finally {
       setIsTyping(false);
       setAttachedFiles([]);
     }
   };
+
   const handleFileAttach = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     setAttachedFiles((prev) => [...prev, ...files]);

@@ -1,5 +1,10 @@
 // Case/Request Types
-export type CaseStatus = 'new' | 'under_review' | 'approved' | 'rejected' | 'completed';
+export type CaseStatus =
+  | "new"
+  | "under_review"
+  | "approved"
+  | "rejected"
+  | "completed";
 
 export interface Case {
   id: string;
@@ -33,7 +38,7 @@ export interface UploadedDocument {
 
 export interface ChatMessage {
   id: string;
-  role: 'user' | 'agent';
+  role: "user" | "agent";
   content: string;
   timestamp: string;
   attachments?: UploadedDocument[];
@@ -64,7 +69,7 @@ export interface Service {
 }
 
 // Language Types
-export type Language = 'ar' | 'en';
+export type Language = "ar" | "en";
 
 export interface Translations {
   [key: string]: {
