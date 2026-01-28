@@ -180,16 +180,17 @@ export function ChatInterface({ caseId, onCaseCreated }: ChatInterfaceProps) {
 
   //   loadGreeting();
   // }, [language]);
-  useEffect(() => {
-    setMessages([
-      {
-        id: "init",
-        role: "agent",
-        content: "",
-        timestamp: new Date().toISOString(),
-      },
-    ]);
-  }, []);
+
+  // useEffect(() => {
+  //   setMessages([
+  //     {
+  //       id: "init",
+  //       role: "agent",
+  //       content: "",
+  //       timestamp: new Date().toISOString(),
+  //     },
+  //   ]);
+  // }, []);
 
   // Auto-scroll to bottom
   useEffect(() => {
