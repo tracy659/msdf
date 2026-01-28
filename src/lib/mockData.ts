@@ -1,0 +1,182 @@
+import { Case, Service, User } from './types';
+
+export const mockServices: Service[] = [
+  {
+    id: '1',
+    nameAr: 'تقديم طلب خدمة ضمان اجتماعي',
+    nameEn: 'Social Security Service Request',
+    descriptionAr: 'تقديم طلب للحصول على خدمات الضمان الاجتماعي للأسر المستحقة',
+    descriptionEn: 'Apply for social security services for eligible families',
+    icon: 'HandHeart',
+    category: 'social',
+    basePrice: 0,
+    estimatedDays: 14,
+    requiredDocuments: ['بطاقة الهوية', 'شهادة الراتب', 'إثبات الحالة الاجتماعية'],
+  },
+  {
+    id: '2',
+    nameAr: 'خدمات إسكان المواطنين',
+    nameEn: 'Citizen Housing Services',
+    descriptionAr: 'خدمات إسكان المواطنين (إسكان) - تقديم طلبات السكن والدعم السكني',
+    descriptionEn: 'Citizen housing services - housing applications and support',
+    icon: 'Home',
+    category: 'housing',
+    basePrice: 0,
+    estimatedDays: 30,
+    requiredDocuments: ['بطاقة الهوية', 'شهادة الراتب', 'عقد الزواج'],
+  },
+  {
+    id: '3',
+    nameAr: 'طلب بطاقة تعريفية للأشخاص ذوي الإعاقة',
+    nameEn: 'Disability ID Card Request',
+    descriptionAr: 'طلب شهادة تحديد نوع الإعاقة لتسهيل الحصول على الخدمات الحكومية',
+    descriptionEn: 'Request disability type certificate for easier access to government services',
+    icon: 'Accessibility',
+    category: 'disability',
+    basePrice: 0,
+    estimatedDays: 7,
+    requiredDocuments: ['بطاقة الهوية', 'التقرير الطبي', 'صور شخصية'],
+  },
+  {
+    id: '4',
+    nameAr: 'التقدّم لخدمات المشاريع الإنتاجية الوطنية',
+    nameEn: 'National Production Projects Services',
+    descriptionAr: 'تسجيل بيانات المشاريع الإنتاجية والتقدّم للجوائز الوطنية',
+    descriptionEn: 'Register production projects and apply for national awards',
+    icon: 'HeartHandshake',
+    category: 'family',
+    basePrice: 0,
+    estimatedDays: 21,
+    requiredDocuments: ['بطاقة الهوية', 'السجل التجاري', 'خطة المشروع'],
+  },
+  {
+    id: '5',
+    nameAr: 'تقديم طلب تسجيل جمعية مهنية',
+    nameEn: 'Professional Association Registration',
+    descriptionAr: 'التقدم بطلب تسجيل للحصول على ترخيص تأسيس جمعية مهنية',
+    descriptionEn: 'Apply for registration to obtain a professional association license',
+    icon: 'Users',
+    category: 'associations',
+    basePrice: 0,
+    estimatedDays: 30,
+    requiredDocuments: ['بطاقات هوية المؤسسين', 'النظام الأساسي', 'عقد التأسيس'],
+  },
+  {
+    id: '6',
+    nameAr: 'طلب تأسيس مؤسسة خاصة',
+    nameEn: 'Private Institution Establishment',
+    descriptionAr: 'التقدم بطلب تسجيل للحصول على ترخيص تأسيس مؤسسة خاصة',
+    descriptionEn: 'Apply for registration to establish a private institution',
+    icon: 'Siren',
+    category: 'institutions',
+    basePrice: 0,
+    estimatedDays: 30,
+    requiredDocuments: ['بطاقات هوية المؤسسين', 'النظام الأساسي', 'وثيقة التأسيس'],
+  },
+];
+export const mockUser: User = {
+  id: 'user-1',
+  qid: '28400000001',
+  email: 'user@example.com',
+  nameAr: 'محمد أحمد الخالدي',
+  nameEn: 'Mohammed Ahmed Al-Khalidi',
+  phone: '+974 5500 0000',
+};
+
+export const mockCases: Case[] = [
+  {
+    id: 'case-1',
+    caseNumber: 'MSDF-2024-001234',
+    serviceType: 'social_assistance',
+    serviceNameAr: 'المساعدة الاجتماعية',
+    submissionDate: '2024-01-15',
+    status: 'approved',
+    estimatedPrice: 500,
+    currency: 'QAR',
+    userId: 'user-1',
+    documents: [
+      {
+        id: 'doc-1',
+        name: 'بطاقة_الهوية.pdf',
+        type: 'application/pdf',
+        size: 245000,
+        url: '/documents/id-card.pdf',
+        uploadedAt: '2024-01-15T10:30:00Z',
+      },
+    ],
+    messages: [
+      {
+        id: 'msg-1',
+        role: 'agent',
+        content: 'مرحبًا بك في بوابة الخدمات الإلكترونية! كيف يمكنني مساعدتك اليوم؟',
+        timestamp: '2024-01-15T10:00:00Z',
+      },
+      {
+        id: 'msg-2',
+        role: 'user',
+        content: 'أريد التقدم لخدمة المساعدة الاجتماعية',
+        timestamp: '2024-01-15T10:05:00Z',
+      },
+      {
+        id: 'msg-3',
+        role: 'agent',
+        content: 'تم استلام طلبك بنجاح. يرجى إرفاق المستندات المطلوبة: بطاقة الهوية، شهادة الراتب، وعقد الإيجار.',
+        timestamp: '2024-01-15T10:06:00Z',
+      },
+    ],
+    statusHistory: [
+      { status: 'new', timestamp: '2024-01-15T10:00:00Z', note: 'تم استلام الطلب' },
+      { status: 'under_review', timestamp: '2024-01-16T09:00:00Z', note: 'جاري مراجعة المستندات' },
+      { status: 'approved', timestamp: '2024-01-20T14:00:00Z', note: 'تمت الموافقة على الطلب' },
+    ],
+  },
+  {
+    id: 'case-2',
+    caseNumber: 'MSDF-2024-001235',
+    serviceType: 'family_support',
+    serviceNameAr: 'دعم الأسرة',
+    submissionDate: '2024-01-18',
+    status: 'under_review',
+    estimatedPrice: 750,
+    currency: 'QAR',
+    userId: 'user-1',
+    documents: [],
+    messages: [
+      {
+        id: 'msg-4',
+        role: 'agent',
+        content: 'مرحبًا! أنا هنا لمساعدتك في تقديم طلب دعم الأسرة.',
+        timestamp: '2024-01-18T11:00:00Z',
+      },
+    ],
+    statusHistory: [
+      { status: 'new', timestamp: '2024-01-18T11:00:00Z', note: 'تم استلام الطلب' },
+      { status: 'under_review', timestamp: '2024-01-19T10:00:00Z', note: 'جاري مراجعة الطلب' },
+    ],
+  },
+  {
+    id: 'case-3',
+    caseNumber: 'MSDF-2024-001236',
+    serviceType: 'emergency_aid',
+    serviceNameAr: 'المساعدة الطارئة',
+    submissionDate: '2024-01-20',
+    status: 'completed',
+    estimatedPrice: 300,
+    currency: 'QAR',
+    userId: 'user-1',
+    documents: [],
+    messages: [],
+    statusHistory: [
+      { status: 'new', timestamp: '2024-01-20T08:00:00Z' },
+      { status: 'under_review', timestamp: '2024-01-20T10:00:00Z' },
+      { status: 'approved', timestamp: '2024-01-20T12:00:00Z' },
+      { status: 'completed', timestamp: '2024-01-21T09:00:00Z', note: 'تم صرف المساعدة' },
+    ],
+  },
+];
+
+export const generateCaseNumber = (): string => {
+  const year = new Date().getFullYear();
+  const random = Math.floor(Math.random() * 900000) + 100000;
+  return `MSDF-${year}-${random}`;
+};
