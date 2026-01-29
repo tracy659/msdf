@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input";
 import { mockServices, generateCaseNumber } from "@/lib/mockData";
 import qatariAgentAvatar from "@/assets/qatari-agent-avatar.png";
 import { completeChat } from "@/services/chatCompletionService";
-import { api } from "@/services/api";
+import { BackendChatState } from "@/models/ChatCompletionModel";
 
 interface ChatInterfaceProps {
   caseId?: string;
@@ -92,7 +92,29 @@ export function ChatInterface({ caseId, onCaseCreated }: ChatInterfaceProps) {
   const [apiMessages, setApiMessages] = useState<
     { type: "user" | "assistant"; content: string }[]
   >([]);
-  const STATIC_CASE_ID = "CASE-1023";
+  // const STATIC_CASE_ID = "CASE-1023";
+
+  const [sessionId, setSessionId] = useState<string>(() => crypto.randomUUID());
+
+  // Map backend state to your frontend conversationState
+  const mapBackendStateToUI = (state: BackendChatState) => {
+    switch (state) {
+      case "AwaitingGreeting":
+        return "greeting";
+      case "AwaitingServiceSelection":
+        return "selecting";
+      case "AwaitingDetails":
+        return "details";
+      case "AwaitingDocuments":
+        return "documents";
+      case "AwaitingConfirmation":
+        return "confirm";
+      case "Completed":
+        return "complete";
+      default:
+        return "greeting";
+    }
+  };
 
   // Helper to create preview for file
   const createFilePreview = (file: File): string | undefined => {
@@ -105,7 +127,8 @@ export function ChatInterface({ caseId, onCaseCreated }: ChatInterfaceProps) {
   // Add files to history when sent
   const addToDocumentHistory = (files: File[]) => {
     const newDocs: UploadedDocumentHistory[] = files.map((file) => ({
-      id: `doc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      // id: `doc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: crypto.randomUUID(),
       file,
       preview: createFilePreview(file),
       uploadedAt: new Date(),
@@ -197,78 +220,185 @@ export function ChatInterface({ caseId, onCaseCreated }: ChatInterfaceProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  const simulateAgentResponse = (response: string, delay = 1500) => {
-    setIsTyping(true);
-    setTimeout(() => {
-      const agentMessage: ChatMessageWithFiles = {
-        id: `msg-${Date.now()}`,
-        role: "agent",
-        content: response,
-        timestamp: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, agentMessage]);
-      setIsTyping(false);
-    }, delay);
-  };
+  // const handleSendMessage = async () => {
+  //   if (!inputValue.trim() && attachedFiles.length === 0) return;
 
+  //   const userText = inputValue;
+
+  //   const userMessage: ChatMessageWithFiles = {
+  //     id: `msg-${Date.now()}`,
+  //     role: "user",
+  //     content: userText,
+  //     timestamp: new Date().toISOString(),
+  //   };
+
+  //   setMessages((prev) => [...prev, userMessage]);
+  //   setInputValue("");
+  //   setIsTyping(true);
+
+  //   const updatedApiMessages = [
+  //     ...apiMessages,
+  //     {
+  //       type: "user" as const,
+  //       content: userText,
+  //     },
+  //   ];
+
+  //   setApiMessages(updatedApiMessages);
+
+  //   try {
+  //     // const aiResponse = await completeChat({
+  //     //   messages: updatedApiMessages,
+  //     //   attachments: attachedFiles,
+  //     //   question: userText,
+  //     //   caseId: STATIC_CASE_ID,
+  //     // });
+
+  //     const aiResponse = await completeChat({
+  //       sessionId,
+  //       message: userText,
+  //       attachments: attachedFiles,
+  //     });
+
+  //     const agentMessage: ChatMessageWithFiles = {
+  //       id: `msg-${Date.now()}`,
+  //       role: "agent",
+  //       content: aiResponse,
+  //       timestamp: new Date().toISOString(),
+  //     };
+
+  //     setMessages((prev) => [...prev, agentMessage]);
+
+  //     setApiMessages((prev) => [
+  //       ...prev,
+  //       {
+  //         type: "assistant",
+  //         content: aiResponse,
+  //       },
+  //     ]);
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //     setIsTyping(false);
+  //     setAttachedFiles([]);
+  //   }
+  // };
+
+  // const handleSendMessage = async () => {
+  //   if (!inputValue.trim() && attachedFiles.length === 0) return;
+
+  //   const userText = inputValue;
+
+  //   console.log("Attached files before send:", attachedFiles);
+  //   console.log("Files length:", attachedFiles.length);
+  //   // Add user message
+  //   setMessages((prev) => [
+  //     ...prev,
+  //     {
+  //       id: crypto.randomUUID(),
+  //       role: "user",
+  //       content: userText,
+  //       timestamp: new Date().toISOString(),
+  //     },
+  //   ]);
+
+  //   setInputValue("");
+  //   setIsTyping(true);
+
+  //   try {
+  //     const response: any = await completeChat({
+  //       sessionId,
+  //       message: userText,
+  //       attachments: attachedFiles,
+  //     });
+
+  //     // Map backend state to frontend UI
+  //     setConversationState(mapBackendStateToUI(response.state));
+
+  //     // Ensure message is a string before rendering
+  //     const agentMessageContent =
+  //       typeof response.message === "string"
+  //         ? response.message
+  //         : JSON.stringify(response.message);
+
+  //     setMessages((prev) => [
+  //       ...prev,
+  //       {
+  //         id: crypto.randomUUID(),
+  //         role: "agent",
+  //         content: agentMessageContent,
+  //         timestamp: new Date().toISOString(),
+  //       },
+  //     ]);
+  //     // Add to document history
+  //     addToDocumentHistory(attachedFiles);
+  //   } catch (err) {
+  //     console.error("Chat error:", err);
+  //   } finally {
+  //     setIsTyping(false);
+  //     setAttachedFiles([]);
+  //   }
+  // };
   const handleSendMessage = async () => {
     if (!inputValue.trim() && attachedFiles.length === 0) return;
 
     const userText = inputValue;
 
-    const userMessage: ChatMessageWithFiles = {
-      id: `msg-${Date.now()}`,
-      role: "user",
-      content: userText,
-      timestamp: new Date().toISOString(),
-    };
+    // Create file attachments with previews
+    const fileAttachments = attachedFiles.map((file) => ({
+      id: crypto.randomUUID(),
+      file: file,
+      preview: createFilePreview(file),
+    }));
 
-    setMessages((prev) => [...prev, userMessage]);
+    // Add user message WITH file attachments
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        role: "user",
+        content: userText,
+        timestamp: new Date().toISOString(),
+        fileAttachments: fileAttachments, // ← Add this
+      },
+    ]);
+
     setInputValue("");
     setIsTyping(true);
 
-    const updatedApiMessages = [
-      ...apiMessages,
-      {
-        type: "user" as const,
-        content: userText,
-      },
-    ];
-
-    setApiMessages(updatedApiMessages);
-
     try {
-      const aiResponse = await completeChat({
-        messages: updatedApiMessages,
+      const response: any = await completeChat({
+        sessionId,
+        message: userText,
         attachments: attachedFiles,
-        question: userText,
-        caseId: STATIC_CASE_ID,
       });
 
-      const agentMessage: ChatMessageWithFiles = {
-        id: `msg-${Date.now()}`,
-        role: "agent",
-        content: aiResponse,
-        timestamp: new Date().toISOString(),
-      };
+      setConversationState(mapBackendStateToUI(response.state));
 
-      setMessages((prev) => [...prev, agentMessage]);
+      const agentMessageContent =
+        typeof response.message === "string"
+          ? response.message
+          : JSON.stringify(response.message);
 
-      setApiMessages((prev) => [
+      setMessages((prev) => [
         ...prev,
         {
-          type: "assistant",
-          content: aiResponse,
+          id: crypto.randomUUID(),
+          role: "agent",
+          content: agentMessageContent,
+          timestamp: new Date().toISOString(),
         },
       ]);
-    } catch (error) {
-      console.error(error);
+
+      // Add files to document history
+      addToDocumentHistory(attachedFiles);
+    } catch (err) {
+      console.error("Chat error:", err);
     } finally {
       setIsTyping(false);
-      setAttachedFiles([]);
+      setAttachedFiles([]); // Clear after sending
     }
   };
-
   const handleFileAttach = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     setAttachedFiles((prev) => [...prev, ...files]);
