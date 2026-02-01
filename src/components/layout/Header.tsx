@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Home,
@@ -30,7 +30,7 @@ export function Header() {
   const { isAuthenticated, logout, user } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  const navigate = useNavigate();
   const navItems = [
     { path: "/", label: t("home"), icon: Home },
     { path: "/assistant", label: t("aiAssistant"), icon: MessageSquare },
@@ -38,7 +38,10 @@ export function Header() {
   ];
 
   const isActive = (path: string) => location.pathname === path;
-
+  const handleLogout = () => {
+    logout(); // ← Clears auth from context
+    navigate("/login"); // ← Redirects to login page
+  };
   return (
     <header className="sticky top-0 z-50 glass border-b border-border">
       <div className="container mx-auto px-4">
@@ -142,7 +145,7 @@ export function Header() {
 
                   {/* Logout Option */}
                   <DropdownMenuItem
-                    onClick={logout}
+                    onClick={handleLogout}
                     className="flex items-center gap-2 text-destructive focus:bg-destructive/10 cursor-pointer"
                   >
                     <LogOut className="w-4 h-4" />
