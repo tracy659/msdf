@@ -1,10 +1,25 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Image, File, X, ChevronRight, ChevronLeft, Maximize2, Clock, Trash2 } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FileText,
+  Image,
+  File,
+  X,
+  ChevronRight,
+  ChevronLeft,
+  Maximize2,
+  Clock,
+  Trash2,
+} from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export interface UploadedDocumentHistory {
   id: string;
@@ -20,18 +35,19 @@ interface DocumentHistorySidebarProps {
   onRemove: (id: string) => void;
 }
 
-export function DocumentHistorySidebar({ 
-  documents, 
-  isOpen, 
+export function DocumentHistorySidebar({
+  documents,
+  isOpen,
   onToggle,
-  onRemove 
+  onRemove,
 }: DocumentHistorySidebarProps) {
   const { language, isRTL } = useLanguage();
-  const [selectedDoc, setSelectedDoc] = useState<UploadedDocumentHistory | null>(null);
+  const [selectedDoc, setSelectedDoc] =
+    useState<UploadedDocumentHistory | null>(null);
 
   const getFileIcon = (type: string) => {
-    if (type.startsWith('image/')) return Image;
-    if (type === 'application/pdf') return FileText;
+    if (type.startsWith("image/")) return Image;
+    if (type === "application/pdf") return FileText;
     return File;
   };
 
@@ -42,9 +58,9 @@ export function DocumentHistorySidebar({
   };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString(language === 'ar' ? 'ar-QA' : 'en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleTimeString(language === "ar" ? "ar-QA" : "en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -53,12 +69,12 @@ export function DocumentHistorySidebar({
       {/* Sidebar */}
       <motion.div
         initial={false}
-        animate={{ 
+        animate={{
           width: isOpen ? 280 : 0,
-          opacity: isOpen ? 1 : 0
+          opacity: isOpen ? 1 : 0,
         }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className={`h-full bg-card border-${isRTL ? 'r' : 'l'} border-border overflow-hidden flex-shrink-0`}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className={`h-full bg-card border-${isRTL ? "r" : "l"} border-border overflow-hidden flex-shrink-0`}
       >
         <div className="h-full flex flex-col w-[280px]">
           {/* Header */}
@@ -67,7 +83,7 @@ export function DocumentHistorySidebar({
               <div className="flex items-center gap-2">
                 <FileText className="w-5 h-5 text-primary" />
                 <h3 className="font-semibold text-foreground">
-                  {language === 'ar' ? 'المستندات' : 'Documents'}
+                  {language === "ar" ? "المستندات" : "Documents"}
                 </h3>
               </div>
               <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full">
@@ -85,7 +101,7 @@ export function DocumentHistorySidebar({
                     <FileText className="w-6 h-6 text-muted-foreground" />
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {language === 'ar' ? 'لا توجد مستندات' : 'No documents yet'}
+                    {language === "ar" ? "لا توجد مستندات" : "No documents yet"}
                   </p>
                 </div>
               ) : (
@@ -105,8 +121,8 @@ export function DocumentHistorySidebar({
                           {/* Preview Thumbnail */}
                           <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
                             {doc.preview ? (
-                              <img 
-                                src={doc.preview} 
+                              <img
+                                src={doc.preview}
                                 alt={doc.file.name}
                                 className="w-full h-full object-cover"
                               />
@@ -168,7 +184,7 @@ export function DocumentHistorySidebar({
       </motion.div>
 
       {/* Toggle Button */}
-      <motion.button
+      {/* <motion.button
         onClick={onToggle}
         className={`absolute ${isRTL ? 'left-0' : 'right-0'} top-1/2 -translate-y-1/2 z-10 w-6 h-16 bg-primary text-primary-foreground rounded-${isRTL ? 'r' : 'l'}-lg flex items-center justify-center shadow-lg hover:bg-primary/90 transition-colors`}
         whileHover={{ scale: 1.05 }}
@@ -179,14 +195,14 @@ export function DocumentHistorySidebar({
         ) : (
           isRTL ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />
         )}
-      </motion.button>
+      </motion.button> */}
 
       {/* Document Viewer Modal */}
       <Dialog open={!!selectedDoc} onOpenChange={() => setSelectedDoc(null)}>
         <DialogContent className="max-w-4xl h-[80vh] flex flex-col p-0">
           <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
             <div className="flex items-center gap-3">
-              {selectedDoc?.file.type.startsWith('image/') ? (
+              {selectedDoc?.file.type.startsWith("image/") ? (
                 <Image className="w-5 h-5 text-primary" />
               ) : (
                 <FileText className="w-5 h-5 text-primary" />
@@ -200,13 +216,14 @@ export function DocumentHistorySidebar({
           <div className="flex-1 overflow-auto bg-muted/30 flex items-center justify-center p-4">
             {selectedDoc && (
               <>
-                {selectedDoc.file.type.startsWith('image/') && selectedDoc.preview ? (
+                {selectedDoc.file.type.startsWith("image/") &&
+                selectedDoc.preview ? (
                   <img
                     src={selectedDoc.preview}
                     alt={selectedDoc.file.name}
                     className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
                   />
-                ) : selectedDoc.file.type === 'application/pdf' ? (
+                ) : selectedDoc.file.type === "application/pdf" ? (
                   <div className="text-center">
                     <div className="w-24 h-24 mx-auto mb-4 rounded-2xl bg-primary/10 flex items-center justify-center">
                       <FileText className="w-12 h-12 text-primary" />
@@ -217,10 +234,10 @@ export function DocumentHistorySidebar({
                     <Button
                       onClick={() => {
                         const url = URL.createObjectURL(selectedDoc.file);
-                        window.open(url, '_blank');
+                        window.open(url, "_blank");
                       }}
                     >
-                      {language === 'ar' ? 'فتح PDF' : 'Open PDF'}
+                      {language === "ar" ? "فتح PDF" : "Open PDF"}
                     </Button>
                   </div>
                 ) : (
@@ -240,10 +257,12 @@ export function DocumentHistorySidebar({
           {selectedDoc && (
             <div className="px-6 py-3 border-t border-border bg-muted/30 flex items-center justify-between text-sm">
               <span className="text-muted-foreground">
-                {language === 'ar' ? 'النوع:' : 'Type:'} {selectedDoc.file.type || 'Unknown'}
+                {language === "ar" ? "النوع:" : "Type:"}{" "}
+                {selectedDoc.file.type || "Unknown"}
               </span>
               <span className="text-muted-foreground">
-                {language === 'ar' ? 'الحجم:' : 'Size:'} {formatFileSize(selectedDoc.file.size)}
+                {language === "ar" ? "الحجم:" : "Size:"}{" "}
+                {formatFileSize(selectedDoc.file.size)}
               </span>
             </div>
           )}

@@ -11,6 +11,7 @@ import {
   Image,
   File,
   FolderOpen,
+  SendHorizontal,
 } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -214,10 +215,19 @@ export function ChatInterface({ caseId, onCaseCreated }: ChatInterfaceProps) {
   //     },
   //   ]);
   // }, []);
-
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   // Auto-scroll to bottom
+  // useEffect(() => {
+  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // }, [messages, isTyping]);
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    container.scrollTo({
+      top: container.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages, isTyping]);
 
   // const handleSendMessage = async () => {
@@ -558,7 +568,10 @@ export function ChatInterface({ caseId, onCaseCreated }: ChatInterfaceProps) {
         </div>
 
         {/* Messages Container */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div
+          ref={messagesContainerRef}
+          className="flex-1 overflow-y-auto p-4 space-y-4"
+        >
           <AnimatePresence>
             {messages.map((message) => (
               <ChatBubble
@@ -668,7 +681,10 @@ export function ChatInterface({ caseId, onCaseCreated }: ChatInterfaceProps) {
                 size="icon"
                 className="shrink-0 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg"
               >
-                <Send className={`w-5 h-5 ${isRTL ? "rotate-180" : ""}`} />
+                {/* <Send className={`w-5 h-5 ${isRTL ? "rotate-180" : ""}`} /> */}
+                <SendHorizontal
+                  className={`w-5 h-5 ${isRTL ? "rotate-180" : ""}`}
+                />
               </Button>
             </motion.div>
           </div>
