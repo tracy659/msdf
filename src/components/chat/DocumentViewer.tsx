@@ -1,9 +1,23 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, FileText, Image, File, Download, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  X,
+  FileText,
+  Image,
+  File,
+  Download,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+} from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface DocumentViewerProps {
   files: File[];
@@ -21,17 +35,25 @@ function FilePreviewCard({ file, onView, onRemove }: FilePreviewProps) {
   const [preview, setPreview] = useState<string | null>(null);
 
   // Generate preview for images
-  useState(() => {
-    if (file.type.startsWith('image/')) {
-      const url = URL.createObjectURL(file);
-      setPreview(url);
-      return () => URL.revokeObjectURL(url);
-    }
-  });
+  // useState(() => {
+  //   if (file.type.startsWith('image/')) {
+  //     const url = URL.createObjectURL(file);
+  //     setPreview(url);
+  //     return () => URL.revokeObjectURL(url);
+  //   }
+  // });
+  useEffect(() => {
+    if (!file.type.startsWith("image/")) return;
+
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
 
   const getFileIcon = () => {
-    if (file.type.startsWith('image/')) return Image;
-    if (file.type === 'application/pdf') return FileText;
+    if (file.type.startsWith("image/")) return Image;
+    if (file.type === "application/pdf") return FileText;
     return File;
   };
 
@@ -51,13 +73,13 @@ function FilePreviewCard({ file, onView, onRemove }: FilePreviewProps) {
       className="relative group bg-card border border-border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
     >
       {/* Preview Area */}
-      <div 
+      <div
         className="relative h-32 bg-muted/50 cursor-pointer overflow-hidden"
         onClick={onView}
       >
         {preview ? (
-          <img 
-            src={preview} 
+          <img
+            src={preview}
             alt={file.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
@@ -68,12 +90,12 @@ function FilePreviewCard({ file, onView, onRemove }: FilePreviewProps) {
             </div>
           </div>
         )}
-        
+
         {/* Hover Overlay */}
         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
           <Button size="sm" variant="secondary" className="h-8 px-3">
             <Maximize2 className="w-4 h-4 mr-1" />
-            {language === 'ar' ? 'عرض' : 'View'}
+            {language === "ar" ? "عرض" : "View"}
           </Button>
         </div>
 
@@ -90,13 +112,16 @@ function FilePreviewCard({ file, onView, onRemove }: FilePreviewProps) {
 
         {/* File Type Badge */}
         <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/60 text-white text-xs rounded-full uppercase">
-          {file.type.split('/')[1]?.substring(0, 4) || 'file'}
+          {file.type.split("/")[1]?.substring(0, 4) || "file"}
         </div>
       </div>
 
       {/* File Info */}
       <div className="p-3">
-        <p className="font-medium text-sm truncate text-foreground" title={file.name}>
+        <p
+          className="font-medium text-sm truncate text-foreground"
+          title={file.name}
+        >
           {file.name}
         </p>
         <p className="text-xs text-muted-foreground mt-0.5">
@@ -138,7 +163,7 @@ export function DocumentViewer({ files, onRemove }: DocumentViewerProps) {
           <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                {selectedFile?.type.startsWith('image/') ? (
+                {selectedFile?.type.startsWith("image/") ? (
                   <Image className="w-5 h-5 text-primary" />
                 ) : (
                   <FileText className="w-5 h-5 text-primary" />
@@ -147,9 +172,9 @@ export function DocumentViewer({ files, onRemove }: DocumentViewerProps) {
                   {selectedFile?.name}
                 </DialogTitle>
               </div>
-              
+
               {/* Zoom Controls for Images */}
-              {selectedFile?.type.startsWith('image/') && (
+              {selectedFile?.type.startsWith("image/") && (
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
@@ -179,7 +204,7 @@ export function DocumentViewer({ files, onRemove }: DocumentViewerProps) {
           <div className="flex-1 overflow-auto bg-muted/30 flex items-center justify-center p-4">
             {selectedFile && (
               <>
-                {selectedFile.type.startsWith('image/') ? (
+                {selectedFile.type.startsWith("image/") ? (
                   <motion.img
                     key={zoom}
                     initial={{ opacity: 0.8 }}
@@ -189,7 +214,7 @@ export function DocumentViewer({ files, onRemove }: DocumentViewerProps) {
                     className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
                     style={{ transform: `scale(${zoom / 100})` }}
                   />
-                ) : selectedFile.type === 'application/pdf' ? (
+                ) : selectedFile.type === "application/pdf" ? (
                   <div className="text-center">
                     <div className="w-24 h-24 mx-auto mb-4 rounded-2xl bg-primary/10 flex items-center justify-center">
                       <FileText className="w-12 h-12 text-primary" />
@@ -198,18 +223,18 @@ export function DocumentViewer({ files, onRemove }: DocumentViewerProps) {
                       {selectedFile.name}
                     </p>
                     <p className="text-sm text-muted-foreground mb-4">
-                      {language === 'ar' 
-                        ? 'معاينة PDF غير متاحة في المتصفح'
-                        : 'PDF preview not available in browser'}
+                      {language === "ar"
+                        ? "معاينة PDF غير متاحة في المتصفح"
+                        : "PDF preview not available in browser"}
                     </p>
                     <Button
                       onClick={() => {
                         const url = getPreviewUrl(selectedFile);
-                        window.open(url, '_blank');
+                        window.open(url, "_blank");
                       }}
                     >
                       <Download className="w-4 h-4 mr-2" />
-                      {language === 'ar' ? 'فتح PDF' : 'Open PDF'}
+                      {language === "ar" ? "فتح PDF" : "Open PDF"}
                     </Button>
                   </div>
                 ) : (
@@ -221,7 +246,9 @@ export function DocumentViewer({ files, onRemove }: DocumentViewerProps) {
                       {selectedFile.name}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {language === 'ar' ? 'معاينة غير متاحة' : 'Preview not available'}
+                      {language === "ar"
+                        ? "معاينة غير متاحة"
+                        : "Preview not available"}
                     </p>
                   </div>
                 )}
@@ -233,10 +260,12 @@ export function DocumentViewer({ files, onRemove }: DocumentViewerProps) {
           {selectedFile && (
             <div className="px-6 py-3 border-t border-border bg-muted/30 flex items-center justify-between text-sm">
               <span className="text-muted-foreground">
-                {language === 'ar' ? 'النوع:' : 'Type:'} {selectedFile.type || 'Unknown'}
+                {language === "ar" ? "النوع:" : "Type:"}{" "}
+                {selectedFile.type || "Unknown"}
               </span>
               <span className="text-muted-foreground">
-                {language === 'ar' ? 'الحجم:' : 'Size:'} {(selectedFile.size / 1024).toFixed(1)} KB
+                {language === "ar" ? "الحجم:" : "Size:"}{" "}
+                {(selectedFile.size / 1024).toFixed(1)} KB
               </span>
             </div>
           )}

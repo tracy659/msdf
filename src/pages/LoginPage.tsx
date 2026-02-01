@@ -1,39 +1,47 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { LogIn, User, Lock, Loader2, Sparkles } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/contexts/AuthContext';
-import { MainLayout } from '@/components/layout/MainLayout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { LogIn, User, Lock, Loader2, Sparkles } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { MainLayout } from "@/components/layout/MainLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function LoginPage() {
   const { t, language, isRTL } = useLanguage();
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [qid, setQid] = useState('');
-  const [password, setPassword] = useState('');
+  const [qid, setQid] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
       const success = await login(qid, password);
       if (success) {
-        navigate('/dashboard');
+        navigate("/dashboard");
       } else {
-        setError(language === 'ar' ? 'بيانات غير صحيحة' : 'Invalid credentials');
+        setError(
+          language === "ar" ? "بيانات غير صحيحة" : "Invalid credentials",
+        );
       }
     } catch (err) {
-      setError(language === 'ar' ? 'حدث خطأ' : 'An error occurred');
+      setError(language === "ar" ? "حدث خطأ" : "An error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -50,9 +58,9 @@ export default function LoginPage() {
           <Card className="border-primary/20 shadow-xl overflow-hidden">
             {/* Decorative Header Background */}
             <div className="h-2 bg-gradient-to-r from-primary via-accent to-primary" />
-            
+
             <CardHeader className="text-center pt-8">
-              <motion.div 
+              <motion.div
                 className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-4 shadow-lg"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -67,20 +75,24 @@ export default function LoginPage() {
                   <Sparkles className="w-5 h-5 text-accent" />
                 </motion.div>
               </motion.div>
-              <CardTitle className="text-2xl font-bold">{t('loginTitle')}</CardTitle>
+              <CardTitle className="text-2xl font-bold">
+                {t("loginTitle")}
+              </CardTitle>
               <CardDescription className="text-muted-foreground">
-                {language === 'ar' 
-                  ? 'أدخل بياناتك للوصول إلى خدماتك'
-                  : 'Enter your credentials to access your services'}
+                {language === "ar"
+                  ? "أدخل بياناتك للوصول إلى خدماتك"
+                  : "Enter your credentials to access your services"}
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent className="pb-8">
               <form onSubmit={handleSubmit} className="space-y-5">
                 {/* QID Input */}
                 <div className="space-y-2">
                   <Label htmlFor="qid" className="text-sm font-medium">
-                    {language === 'ar' ? 'الرقم الشخصي (QID)' : 'Qatar ID (QID)'}
+                    {language === "ar"
+                      ? "الرقم الشخصي (QID)"
+                      : "Qatar ID (QID)"}
                   </Label>
                   <div className="relative">
                     <User className="absolute top-1/2 -translate-y-1/2 start-3 w-5 h-5 text-muted-foreground" />
@@ -100,7 +112,7 @@ export default function LoginPage() {
                 {/* Password Input */}
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-sm font-medium">
-                    {language === 'ar' ? 'كلمة المرور' : 'Password'}
+                    {language === "ar" ? "كلمة المرور" : "Password"}
                   </Label>
                   <div className="relative">
                     <Lock className="absolute top-1/2 -translate-y-1/2 start-3 w-5 h-5 text-muted-foreground" />
@@ -119,7 +131,7 @@ export default function LoginPage() {
 
                 {/* Error Message */}
                 {error && (
-                  <motion.p 
+                  <motion.p
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-sm text-destructive text-center bg-destructive/10 py-2 px-3 rounded-lg"
@@ -137,12 +149,12 @@ export default function LoginPage() {
                   {isLoading ? (
                     <>
                       <Loader2 className="w-5 h-5 me-2 animate-spin" />
-                      {language === 'ar' ? 'جاري التحميل...' : 'Loading...'}
+                      {language === "ar" ? "جاري التحميل..." : "Loading..."}
                     </>
                   ) : (
                     <>
                       <LogIn className="w-5 h-5 me-2" />
-                      {language === 'ar' ? 'تسجيل الدخول' : 'Login'}
+                      {language === "ar" ? "تسجيل الدخول" : "Login"}
                     </>
                   )}
                 </Button>
@@ -151,9 +163,9 @@ export default function LoginPage() {
               {/* Demo Note */}
               <div className="mt-6 p-3 bg-muted/50 rounded-lg border border-border">
                 <p className="text-xs text-muted-foreground text-center">
-                  {language === 'ar' 
-                    ? 'ملاحظة: هذا نظام تجريبي. أدخل أي بيانات للدخول.'
-                    : 'Note: This is a demo system. Enter any data to login.'}
+                  {language === "ar"
+                    ? "ملاحظة: هذا نظام تجريبي. أدخل أي بيانات للدخول."
+                    : "Note: This is a demo system. Enter any data to login."}
                 </p>
               </div>
             </CardContent>

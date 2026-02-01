@@ -374,6 +374,7 @@ export function ChatInterface({ caseId, onCaseCreated }: ChatInterfaceProps) {
     ]);
 
     setInputValue("");
+    setAttachedFiles([]);
     setIsTyping(true);
 
     try {

@@ -1,11 +1,16 @@
-import React, { forwardRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { UploadedDocument } from '@/lib/types';
-import { File, FileText, Image, Maximize2, X } from 'lucide-react';
-import { format } from 'date-fns';
-import { ar, enUS } from 'date-fns/locale';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import React, { forwardRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { UploadedDocument } from "@/lib/types";
+import { File, FileText, Image, Maximize2, X } from "lucide-react";
+import { format } from "date-fns";
+import { ar, enUS } from "date-fns/locale";
+import { useLanguage } from "@/contexts/LanguageContext";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface FileAttachment {
   id: string;
@@ -14,27 +19,142 @@ interface FileAttachment {
 }
 
 interface ChatBubbleProps {
-  role: 'user' | 'agent';
+  role: "user" | "agent";
   content: string;
   timestamp: string;
   attachments?: UploadedDocument[];
   fileAttachments?: FileAttachment[];
 }
 
+// Helper function to parse markdown content (links and bold text)
+function parseMarkdownContent(content: string): (string | JSX.Element)[] {
+  const parts: (string | JSX.Element)[] = [];
+
+  // First, handle markdown links [text](url)
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  let match;
+  const matches: Array<{
+    text: string;
+    url: string;
+    index: number;
+    length: number;
+  }> = [];
+
+  while ((match = linkRegex.exec(content)) !== null) {
+    matches.push({
+      text: match[1],
+      url: match[2],
+      index: match.index,
+      length: match[0].length,
+    });
+  }
+
+  // Process matches and build parts
+  let currentIndex = 0;
+
+  matches.forEach(({ text, url, index }) => {
+    // Add text before link
+    if (index > currentIndex) {
+      parts.push(content.substring(currentIndex, index));
+    }
+
+    // Add the link
+    parts.push(
+      <a
+        key={`link-${index}`}
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-500 hover:text-blue-700 hover:underline font-medium break-all"
+      >
+        {text}
+      </a>,
+    );
+
+    currentIndex = index + text.length + url.length + 4; // [text](url) = 4 extra chars
+  });
+
+  // Add remaining text
+  if (currentIndex < content.length) {
+    parts.push(content.substring(currentIndex));
+  }
+
+  // If no links found, return original content
+  if (parts.length === 0) {
+    parts.push(content);
+  }
+
+  return parts;
+}
+
+// Helper to format text with bold
+function formatMessageContent(content: string): (string | JSX.Element)[] {
+  const linkedContent = parseMarkdownContent(content);
+  const parts: (string | JSX.Element)[] = [];
+
+  linkedContent.forEach((part, idx) => {
+    if (typeof part === "string") {
+      const boldRegex = /\*\*([^*]+)\*\*/g;
+
+      let boldMatch;
+      const boldMatches: Array<{
+        text: string;
+        index: number;
+        length: number;
+      }> = [];
+
+      while ((boldMatch = boldRegex.exec(part)) !== null) {
+        boldMatches.push({
+          text: boldMatch[1],
+          index: boldMatch.index,
+          length: boldMatch[0].length,
+        });
+      }
+
+      if (boldMatches.length === 0) {
+        parts.push(part);
+      } else {
+        let currIdx = 0;
+        boldMatches.forEach(({ text, index }) => {
+          if (index > currIdx) {
+            parts.push(part.substring(currIdx, index));
+          }
+          parts.push(
+            <strong key={`bold-${idx}-${index}`} className="font-bold">
+              {text}
+            </strong>,
+          );
+          currIdx = index + text.length + 4; // **text** = 4 extra chars
+        });
+
+        if (currIdx < part.length) {
+          parts.push(part.substring(currIdx));
+        }
+      }
+    } else {
+      parts.push(part);
+    }
+  });
+
+  return parts;
+}
+
 export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
   ({ role, content, timestamp, attachments, fileAttachments }, ref) => {
     const { language, isRTL } = useLanguage();
-    const isUser = role === 'user';
-    const [selectedFile, setSelectedFile] = useState<FileAttachment | null>(null);
+    const isUser = role === "user";
+    const [selectedFile, setSelectedFile] = useState<FileAttachment | null>(
+      null,
+    );
 
     const formatTime = (dateString: string) => {
       const date = new Date(dateString);
-      return format(date, 'HH:mm', { locale: language === 'ar' ? ar : enUS });
+      return format(date, "HH:mm", { locale: language === "ar" ? ar : enUS });
     };
 
     const getFileIcon = (type: string) => {
-      if (type.startsWith('image/')) return Image;
-      if (type === 'application/pdf') return FileText;
+      if (type.startsWith("image/")) return Image;
+      if (type === "application/pdf") return FileText;
       return File;
     };
 
@@ -50,13 +170,17 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
           ref={ref}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`flex ${isUser ? 'justify-start' : 'justify-end'}`}
+          className={`flex ${isUser ? "justify-start" : "justify-end"}`}
         >
-          <div className={`max-w-[80%] ${isUser ? 'order-1' : 'order-1'}`}>
+          <div className={`max-w-[80%] ${isUser ? "order-1" : "order-1"}`}>
             {/* Message bubble */}
-            <div className={isUser ? 'chat-bubble-user' : 'chat-bubble-agent'}>
-              <p className="text-sm md:text-base whitespace-pre-wrap">{content}</p>
-              
+            <div className={isUser ? "chat-bubble-user" : "chat-bubble-agent"}>
+              {/* <p className="text-sm md:text-base whitespace-pre-wrap">
+                {content}
+              </p> */}
+              <p className="text-md md:text-base whitespace-pre-wrap">
+                {formatMessageContent(content)}
+              </p>
               {/* Legacy Attachments */}
               {attachments && attachments.length > 0 && (
                 <div className="mt-3 space-y-2">
@@ -90,8 +214,8 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
                       >
                         {file.preview ? (
                           <div className="relative h-20">
-                            <img 
-                              src={file.preview} 
+                            <img
+                              src={file.preview}
                               alt={file.file.name}
                               className="w-full h-full object-cover"
                             />
@@ -120,18 +244,23 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
             </div>
 
             {/* Timestamp */}
-            <p className={`text-xs text-muted-foreground mt-1 ${isUser ? 'text-start' : 'text-end'}`}>
+            <p
+              className={`text-xs text-muted-foreground mt-1 ${isUser ? "text-start" : "text-end"}`}
+            >
               {formatTime(timestamp)}
             </p>
           </div>
         </motion.div>
 
         {/* File Preview Dialog */}
-        <Dialog open={!!selectedFile} onOpenChange={() => setSelectedFile(null)}>
+        <Dialog
+          open={!!selectedFile}
+          onOpenChange={() => setSelectedFile(null)}
+        >
           <DialogContent className="max-w-3xl h-[70vh] flex flex-col p-0">
             <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
               <div className="flex items-center gap-3">
-                {selectedFile?.file.type.startsWith('image/') ? (
+                {selectedFile?.file.type.startsWith("image/") ? (
                   <Image className="w-5 h-5 text-primary" />
                 ) : (
                   <FileText className="w-5 h-5 text-primary" />
@@ -145,7 +274,8 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
             <div className="flex-1 overflow-auto bg-muted/30 flex items-center justify-center p-4">
               {selectedFile && (
                 <>
-                  {selectedFile.file.type.startsWith('image/') && selectedFile.preview ? (
+                  {selectedFile.file.type.startsWith("image/") &&
+                  selectedFile.preview ? (
                     <img
                       src={selectedFile.preview}
                       alt={selectedFile.file.name}
@@ -171,22 +301,31 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
         </Dialog>
       </>
     );
-  }
+  },
 );
 
-ChatBubble.displayName = 'ChatBubble';
+ChatBubble.displayName = "ChatBubble";
 
 // Typing indicator for the agent
 export const TypingIndicator = forwardRef<HTMLDivElement>((_, ref) => {
   return (
     <div ref={ref} className="flex justify-end">
       <div className="chat-bubble-agent flex gap-1 items-center py-4 px-5">
-        <span className="w-2 h-2 bg-foreground/40 rounded-full animate-typing-dot" style={{ animationDelay: '0ms' }} />
-        <span className="w-2 h-2 bg-foreground/40 rounded-full animate-typing-dot" style={{ animationDelay: '200ms' }} />
-        <span className="w-2 h-2 bg-foreground/40 rounded-full animate-typing-dot" style={{ animationDelay: '400ms' }} />
+        <span
+          className="w-2 h-2 bg-foreground/40 rounded-full animate-typing-dot"
+          style={{ animationDelay: "0ms" }}
+        />
+        <span
+          className="w-2 h-2 bg-foreground/40 rounded-full animate-typing-dot"
+          style={{ animationDelay: "200ms" }}
+        />
+        <span
+          className="w-2 h-2 bg-foreground/40 rounded-full animate-typing-dot"
+          style={{ animationDelay: "400ms" }}
+        />
       </div>
     </div>
   );
 });
 
-TypingIndicator.displayName = 'TypingIndicator';
+TypingIndicator.displayName = "TypingIndicator";

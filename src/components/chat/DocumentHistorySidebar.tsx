@@ -93,8 +93,9 @@ export function DocumentHistorySidebar({
           </div>
 
           {/* Document List */}
-          <ScrollArea className="flex-1">
-            <div className="p-3 space-y-2">
+          {/* <ScrollArea className="flex-1 w-full"> */}
+          <div className="flex-1 w-full overflow-y-auto overflow-x-hidden">
+            <div className="p-3 space-y-2 w-full">
               {documents.length === 0 ? (
                 <div className="text-center py-8">
                   <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-muted flex items-center justify-center">
@@ -105,81 +106,84 @@ export function DocumentHistorySidebar({
                   </p>
                 </div>
               ) : (
-                <AnimatePresence>
-                  {documents.map((doc) => {
-                    const DocIcon = getFileIcon(doc.file.type);
-                    return (
-                      <motion.div
-                        key={doc.id}
-                        initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: isRTL ? 20 : -20 }}
-                        className="group relative bg-background rounded-lg border border-border p-3 hover:border-primary/50 hover:shadow-sm transition-all cursor-pointer"
-                        onClick={() => setSelectedDoc(doc)}
-                      >
-                        <div className="flex items-start gap-3">
-                          {/* Preview Thumbnail */}
-                          <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                            {doc.preview ? (
-                              <img
-                                src={doc.preview}
-                                alt={doc.file.name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-primary/10">
-                                <DocIcon className="w-6 h-6 text-primary" />
-                              </div>
-                            )}
-                          </div>
+                <div className="space-y-2 w-full">
+                  <AnimatePresence>
+                    {documents.map((doc) => {
+                      const DocIcon = getFileIcon(doc.file.type);
+                      return (
+                        <motion.div
+                          key={doc.id}
+                          initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: isRTL ? 20 : -20 }}
+                          className="group relative bg-background rounded-lg border border-border p-3 hover:border-primary/50 hover:shadow-sm transition-all cursor-pointer"
+                          onClick={() => setSelectedDoc(doc)}
+                        >
+                          <div className="flex items-start gap-3">
+                            {/* Preview Thumbnail */}
+                            <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                              {doc.preview ? (
+                                <img
+                                  src={doc.preview}
+                                  alt={doc.file.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                                  <DocIcon className="w-6 h-6 text-primary" />
+                                </div>
+                              )}
+                            </div>
 
-                          {/* File Info */}
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm truncate text-foreground">
-                              {doc.file.name}
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                              {formatFileSize(doc.file.size)}
-                            </p>
-                            <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-                              <Clock className="w-3 h-3" />
-                              <span>{formatTime(doc.uploadedAt)}</span>
+                            {/* File Info */}
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm truncate text-foreground">
+                                {doc.file.name}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {formatFileSize(doc.file.size)}
+                              </p>
+                              <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+                                <Clock className="w-3 h-3" />
+                                <span>{formatTime(doc.uploadedAt)}</span>
+                              </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedDoc(doc);
+                                }}
+                              >
+                                <Maximize2 className="w-3.5 h-3.5" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-destructive hover:text-destructive"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onRemove(doc.id);
+                                }}
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </Button>
                             </div>
                           </div>
-
-                          {/* Actions */}
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedDoc(doc);
-                              }}
-                            >
-                              <Maximize2 className="w-3.5 h-3.5" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7 text-destructive hover:text-destructive"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onRemove(doc.id);
-                              }}
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </Button>
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </AnimatePresence>
+                        </motion.div>
+                      );
+                    })}
+                  </AnimatePresence>
+                </div>
               )}
             </div>
-          </ScrollArea>
+          </div>
+          {/* </ScrollArea> */}
         </div>
       </motion.div>
 

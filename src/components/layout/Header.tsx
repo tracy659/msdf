@@ -1,22 +1,40 @@
-import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Home, MessageSquare, FileText, LogIn, LogOut, Globe, Menu, X } from 'lucide-react';
-import { useState } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import msdfLogo from '@/assets/msdf-logo.png';
+import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  Home,
+  MessageSquare,
+  FileText,
+  LogIn,
+  LogOut,
+  Globe,
+  Menu,
+  X,
+} from "lucide-react";
+import { useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import msdfLogo from "@/assets/msdf-logo.png";
+import { User, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Header() {
   const { language, setLanguage, t, isRTL } = useLanguage();
-  const { isAuthenticated, logout } = useAuth();
+  // const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { path: '/', label: t('home'), icon: Home },
-    { path: '/assistant', label: t('aiAssistant'), icon: MessageSquare },
-    { path: '/dashboard', label: t('myRequests'), icon: FileText },
+    { path: "/", label: t("home"), icon: Home },
+    { path: "/assistant", label: t("aiAssistant"), icon: MessageSquare },
+    { path: "/dashboard", label: t("myRequests"), icon: FileText },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -27,9 +45,9 @@ export function Header() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img 
-              src={msdfLogo} 
-              alt="MSDF Qatar" 
+            <img
+              src={msdfLogo}
+              alt="MSDF Qatar"
               className="h-10 md:h-12 w-auto"
             />
           </Link>
@@ -42,8 +60,8 @@ export function Header() {
                 to={item.path}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-smooth ${
                   isActive(item.path)
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 }`}
               >
                 <item.icon className="w-4 h-4" />
@@ -58,15 +76,17 @@ export function Header() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')}
+              onClick={() => setLanguage(language === "ar" ? "en" : "ar")}
               className="flex items-center gap-1.5"
             >
               <Globe className="w-4 h-4" />
-              <span className="hidden sm:inline">{language === 'ar' ? 'EN' : 'عربي'}</span>
+              <span className="hidden sm:inline">
+                {language === "ar" ? "EN" : "عربي"}
+              </span>
             </Button>
 
             {/* Auth Button */}
-            {isAuthenticated ? (
+            {/* {isAuthenticated ? (
               <Button
                 variant="ghost"
                 size="sm"
@@ -74,17 +94,74 @@ export function Header() {
                 className="flex items-center gap-1.5"
               >
                 <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">{t('logout')}</span>
+                <span className="hidden sm:inline">{t("logout")}</span>
               </Button>
             ) : (
               <Link to="/login">
-                <Button variant="default" size="sm" className="flex items-center gap-1.5">
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="flex items-center gap-1.5"
+                >
                   <LogIn className="w-4 h-4" />
-                  <span className="hidden sm:inline">{t('login')}</span>
+                  <span className="hidden sm:inline">{t("login")}</span>
+                </Button>
+              </Link>
+            )} */}
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center gap-1.5 px-2"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg">
+                      <User className="w-4 h-4 text-primary-foreground" />
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-muted-foreground hidden sm:inline" />
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent
+                  align={isRTL ? "start" : "end"}
+                  className="w-56"
+                >
+                  {/* User Name Header */}
+                  <div className="px-3 py-3 border-b border-border">
+                    <p className="font-semibold text-foreground text-center">
+                      {language === "ar"
+                        ? (user as any)?.nameAr || "المستخدم"
+                        : (user as any)?.nameEn ||
+                          (user as any)?.email ||
+                          "User"}
+                    </p>
+                  </div>
+
+                  <DropdownMenuSeparator />
+
+                  {/* Logout Option */}
+                  <DropdownMenuItem
+                    onClick={logout}
+                    className="flex items-center gap-2 text-destructive focus:bg-destructive/10 cursor-pointer"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>{language === "ar" ? "تسجيل الخروج" : "Logout"}</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/login">
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="flex items-center gap-1.5"
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span className="hidden sm:inline">{t("login")}</span>
                 </Button>
               </Link>
             )}
-
             {/* Mobile Menu Toggle */}
             <Button
               variant="ghost"
@@ -92,7 +169,11 @@ export function Header() {
               className="md:hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </Button>
           </div>
         </div>
@@ -101,7 +182,7 @@ export function Header() {
         {mobileMenuOpen && (
           <motion.nav
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden pb-4 border-t border-border mt-2 pt-4"
           >
@@ -113,8 +194,8 @@ export function Header() {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-smooth ${
                     isActive(item.path)
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
                 >
                   <item.icon className="w-5 h-5" />
