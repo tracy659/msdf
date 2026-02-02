@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -61,9 +61,12 @@
 
     /* Custom shadows */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-md:
+      0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg:
+      0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl:
+      0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 
     /* Sidebar */
     --sidebar-background: 344 20% 98%;
@@ -131,7 +134,11 @@
   }
 
   html {
-    font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family:
+      "Tajawal",
+      -apple-system,
+      BlinkMacSystemFont,
+      sans-serif;
     scroll-behavior: smooth;
   }
 
@@ -146,7 +153,12 @@
   }
 
   /* Arabic Typography */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-bold tracking-tight;
   }
 }
@@ -163,7 +175,11 @@
     @apply bg-primary text-primary-foreground font-semibold px-8 py-4 rounded-xl;
     @apply shadow-lg hover:shadow-2xl transition-all duration-300;
     @apply hover:scale-[1.02] active:scale-[0.98];
-    background: linear-gradient(135deg, hsl(344 72% 32%) 0%, hsl(344 72% 40%) 100%);
+    background: linear-gradient(
+      135deg,
+      hsl(344 72% 32%) 0%,
+      hsl(344 72% 40%) 100%
+    );
     box-shadow: 0 4px 20px -4px hsl(344 72% 32% / 0.4);
   }
 
@@ -220,11 +236,12 @@
   .chat-bubble-user {
     @apply bg-gradient-to-br from-primary to-primary/90 text-primary-foreground rounded-2xl rounded-bl-md px-5 py-3;
     @apply shadow-md max-w-[80%];
+    @apply flex justify-center;
   }
 
   .chat-bubble-agent {
     @apply bg-gradient-to-br from-muted to-muted/80 text-foreground rounded-2xl rounded-br-md px-5 py-3;
-    @apply shadow-md max-w-[80%] border border-border;
+    /* @apply shadow-md max-w-[80%] border border-border; */
   }
 
   /* Service Card - Enhanced */
@@ -279,8 +296,10 @@
   /* Animated gradient border */
   .gradient-border {
     position: relative;
-    background: linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
-                linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))) border-box;
+    background:
+      linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
+      linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))
+        border-box;
     border: 2px solid transparent;
     border-radius: 1rem;
   }
@@ -298,20 +317,29 @@
   }
 
   @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
   }
 
   @keyframes pulse-ring {
-    0%, 100% { box-shadow: 0 0 0 4px hsl(var(--primary) / 0.2); }
-    50% { box-shadow: 0 0 0 8px hsl(var(--primary) / 0.1); }
+    0%,
+    100% {
+      box-shadow: 0 0 0 4px hsl(var(--primary) / 0.2);
+    }
+    50% {
+      box-shadow: 0 0 0 8px hsl(var(--primary) / 0.1);
+    }
   }
 }
 
 @layer utilities {
   /* Arabic text utilities */
   .text-arabic {
-    font-family: 'Tajawal', sans-serif;
+    font-family: "Tajawal", sans-serif;
     direction: rtl;
   }
 
@@ -323,7 +351,11 @@
   /* Gradient text */
   .text-gradient-primary {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(344 72% 32%) 0%, hsl(344 60% 40%) 100%);
+    background-image: linear-gradient(
+      135deg,
+      hsl(344 72% 32%) 0%,
+      hsl(344 60% 40%) 100%
+    );
   }
 
   /* Pattern background */

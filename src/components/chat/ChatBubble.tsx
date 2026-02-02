@@ -181,7 +181,7 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
           ref={ref}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`flex ${isUser ? "justify-start" : "justify-end"}`}
+          className={`flex w-full ${isUser ? "justify-start" : "justify-end"}`}
         >
           <div className={`max-w-[80%] ${isUser ? "order-1" : "order-1"}`}>
             {/* Message bubble */}
@@ -189,7 +189,8 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
               <div
                 className={isUser ? "chat-bubble-user" : "chat-bubble-agent"}
               >
-                <p className="text-md md:text-base whitespace-pre-wrap">
+                {/* <p className="text-md md:text-base whitespace-pre-wrap"> */}
+                <p className="text-md md:text-base whitespace-pre-wrap leading-relaxed">
                   {formatMessageContent(content)}
                 </p>
               </div>
