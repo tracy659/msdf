@@ -589,10 +589,10 @@ export function DocumentHistorySidebar({
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: isRTL ? 20 : -20 }}
                     onClick={() => setSelectedDoc(doc)}
-                    className="group relative rounded-xl border border-red-200 bg-white p-4 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden"
+                    className="group relative rounded-xl border border-[rgba(139,24,53,0.25)] bg-[rgba(139,24,53,0.1)] p-4 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden"
                   >
                     {/* PDF Badge */}
-                    <div className="absolute top-3 right-3 text-xs font-semibold px-2 py-1 rounded-md bg-red-50 text-red-600 border border-red-200">
+                    <div className="absolute top-3 right-3 text-xs font-semibold px-2 py-1 rounded-md bg-white/60 text-[rgba(139,24,53,0.9)]">
                       {doc.file.type === "application/pdf"
                         ? "PDF"
                         : doc.file.type.split("/")[1]?.toUpperCase()}
@@ -601,7 +601,7 @@ export function DocumentHistorySidebar({
                     {/* FILE INFO */}
                     <div className="flex items-start gap-3">
                       <div className="w-12 h-12 rounded-lg bg-red-50 flex items-center justify-center shadow-sm">
-                        <FileText className="w-6 h-6 text-red-500" />
+                        <FileText className="w-6 h-6 text-[rgba(139,24,53,0.9)]" />
                       </div>
 
                       <div className="flex-1 min-w-0 pr-10">
@@ -623,9 +623,9 @@ export function DocumentHistorySidebar({
                           e.stopPropagation();
                           setSelectedDoc(doc);
                         }}
-                        className="flex items-center gap-2 text-gray-700 hover:text-black transition"
+                        className="flex items-center gap-2 text-[rgba(139,24,53,0.9)] hover:opacity-80 transition"
                       >
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-4 h-4 text-[rgba(139,24,53,0.9)]" />
                         {language === "ar" ? "عرض" : "View"}
                       </button>
 
@@ -639,9 +639,9 @@ export function DocumentHistorySidebar({
                           a.download = doc.file.name;
                           a.click();
                         }}
-                        className="flex items-center gap-2 text-gray-700 hover:text-black transition"
+                        className="flex items-center gap-2 text-[rgba(139,24,53,0.9)] hover:opacity-80 transition"
                       >
-                        <Download className="w-4 h-4" />
+                        <Download className="w-4 h-4 text-[rgba(139,24,53,0.9)]" />
                         {language === "ar" ? "حفظ" : "Save"}
                       </button>
 
@@ -651,9 +651,9 @@ export function DocumentHistorySidebar({
                           e.stopPropagation();
                           onRemove(doc.id);
                         }}
-                        className="flex items-center gap-2 text-red-500 hover:text-red-600 transition"
+                        className="flex items-center gap-2 text-[rgba(139,24,53,0.9)] hover:opacity-80 transition"
                       >
-                        <X className="w-4 h-4" />
+                        <X className="w-4 h-4 text-[rgba(139,24,53,0.9)]" />
                       </button>
                     </div>
                   </motion.div>
